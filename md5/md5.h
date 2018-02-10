@@ -1,7 +1,11 @@
+#include "stdafx.h"
+
 #include <windows.h>
 
 //RFC: https://www.ietf.org/rfc/rfc1321.txt
 
+#define MD5_BLOCKSIZE 64
+#define MD5_DIGESTSIZE 16
 
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
