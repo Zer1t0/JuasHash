@@ -1,6 +1,7 @@
-#include "stdafx.h"
+#pragma once
 
-#include <windows.h>
+#include <stdlib.h>
+#include <string.h>
 
 //RFC: https://www.ietf.org/rfc/rfc1321.txt
 
@@ -21,5 +22,9 @@
 // I(X, Y, Z) = Y xor (X v not(Z))
 #define I(X, Y, Z) ((Y) ^ ((X) | ~(Z)))
 
+typedef unsigned char md5_byte, *md5_pbyte;
+typedef unsigned short md5_ushort, *md5_pushort;
+typedef unsigned int md5_ulong, *md5_pulong;
+typedef unsigned long long md5_ulonglong, *md5_pulonglong;
 
-DWORD md5(PBYTE message, DWORD64 messageLen, PBYTE *digest);
+md5_ulong md5(md5_pbyte message, md5_ulonglong messageLen, md5_pbyte *digest);

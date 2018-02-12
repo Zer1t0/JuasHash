@@ -1,27 +1,26 @@
-#include "stdafx.h"
 #include "hmac.h"
 
-DWORD hmac(PBYTE key, DWORD64 keyLen, PBYTE message, DWORD64 messageLen, hashFunction hashFunc, USHORT blockSize, USHORT digestSize, PBYTE *digest) {
+hmac_ulong hmac(hmac_pbyte key, hmac_ulonglong keyLen, hmac_pbyte message, hmac_ulonglong messageLen, hashFunction hashFunc, hmac_ushort blockSize, hmac_ushort digestSize, hmac_pbyte *digest) {
 
-	PBYTE blockKey = NULL, oKeyPad = NULL, iKeyPad = NULL, hash = NULL;
-	PBYTE temp1 = NULL, temp2 = NULL;
-	DWORD64 temp1Len = 0, temp2Len = 0;
-	DWORD result = 0;
-	USHORT i = 0;
+	hmac_pbyte blockKey = NULL, oKeyPad = NULL, iKeyPad = NULL, hash = NULL;
+	hmac_pbyte temp1 = NULL, temp2 = NULL;
+	hmac_ulonglong temp1Len = 0, temp2Len = 0;
+	hmac_ulong result = 0;
+	hmac_ushort i = 0;
 
-	blockKey = (PBYTE)LocalAlloc(LPTR, blockSize);
+	blockKey = (hmac_pbyte)calloc(blockSize, 1);
 	if (blockKey == NULL) {
 		result = 1;
 		goto close;
 	}
 
-	oKeyPad = (PBYTE)LocalAlloc(LPTR, blockSize);
+	oKeyPad = (hmac_pbyte)malloc(blockSize);
 	if (oKeyPad == NULL) {
 		result = 2;
 		goto close;
 	}
 
-	iKeyPad = (PBYTE)LocalAlloc(LPTR, blockSize);
+	iKeyPad = (hmac_pbyte)malloc(blockSize);
 	if (iKeyPad == NULL) {
 		result = 3;
 		goto close;
@@ -33,7 +32,7 @@ DWORD hmac(PBYTE key, DWORD64 keyLen, PBYTE message, DWORD64 messageLen, hashFun
 			goto close;
 		}
 		memcpy(blockKey, hash, digestSize);
-		LocalFree(hash);
+		free(hash);
 	}
 	else {
 		memcpy(blockKey, key, keyLen);
@@ -47,13 +46,13 @@ DWORD hmac(PBYTE key, DWORD64 keyLen, PBYTE message, DWORD64 messageLen, hashFun
 	temp1Len = messageLen + blockSize;
 	temp2Len = blockSize + digestSize;
 
-	temp1 = (PBYTE)LocalAlloc(LPTR, temp1Len);
+	temp1 = (hmac_pbyte)malloc(temp1Len);
 	if (temp1 == NULL) {
 		result = 5;
 		goto close;
 	}
 
-	temp2 = (PBYTE)LocalAlloc(LPTR, temp2Len);
+	temp2 = (hmac_pbyte)malloc(temp2Len);
 	if (temp2 == NULL) {
 		result = 6;
 		goto close;
@@ -69,7 +68,7 @@ DWORD hmac(PBYTE key, DWORD64 keyLen, PBYTE message, DWORD64 messageLen, hashFun
 
 	memcpy(temp2, oKeyPad, blockSize);
 	memcpy(temp2 + blockSize, hash, digestSize);
-	LocalFree(hash);
+	free(hash);
 
 	if (hashFunc(temp2, temp2Len, &hash) != 0) {
 		result = 8;
@@ -81,23 +80,23 @@ DWORD hmac(PBYTE key, DWORD64 keyLen, PBYTE message, DWORD64 messageLen, hashFun
 
 close:
 	if (blockKey) {
-		LocalFree(blockKey);
+		free(blockKey);
 	}
 
 	if (oKeyPad) {
-		LocalFree(oKeyPad);
+		free(oKeyPad);
 	}
 
 	if (iKeyPad) {
-		LocalFree(iKeyPad);
+		free(iKeyPad);
 	}
 
 	if (temp1) {
-		LocalFree(temp1);
+		free(temp1);
 	}
 
 	if (temp2) {
-		LocalFree(temp2);
+		free(temp2);
 	}
 
 	return result;
